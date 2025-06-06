@@ -1,38 +1,37 @@
 import 'dart:convert';
 import 'dart:developer';
-
 import 'package:canaryapp/data/model/request/admin/posting_jual_request_model.dart';
 import 'package:canaryapp/data/model/response/burung_semua_tersedia_model.dart';
 import 'package:canaryapp/data/model/response/get_all_burung_response_model.dart';
 import 'package:canaryapp/services/service_http_client.dart';
 import 'package:dartz/dartz.dart';
 
-
-class PostingRepostory {
+class PostingRepository {
   final ServiceHttpClient _serviceHttpClient;
-  PostingRepostory(this._serviceHttpClient);
+  PostingRepository(this._serviceHttpClient);
 
   Future<Either<String, BurungSemuaTersediabyIdModel>> addPostBurung(
-  JualRequestModel requestModel,
+    PostingJualRequestModel requestModel,
   ) async {
     try {
       final response = await _serviceHttpClient.postWithToken(
         'admin/posting-jual',
         requestModel.toMap(),
       );
+
       final jsonResponse = json.decode(response.body);
       if (response.statusCode == 201) {
         final profileResponse = BurungSemuaTersediabyIdModel.fromJson(
           jsonResponse,
         );
-        log("Add Burung  successful: ${profileResponse.message}");
+        log("Add Burung successful: ${profileResponse.message}");
         return Right(profileResponse);
       } else {
         log("Add burung failed: ${jsonResponse['message']}");
         return Left(jsonResponse['message'] ?? "Add burung failed");
       }
     } catch (e) {
-      log("Error in Add burung : $e");
+      log("Error in add burung : $e");
       return Left("An error occurred while post burung: $e");
     }
   }
@@ -43,11 +42,9 @@ class PostingRepostory {
       if (response.statusCode == 200) {
         final jsonResponse = json.decode(response.body);
         final getAllBurung = GetAllBurungModel.fromMap(jsonResponse);
-
         return Right(getAllBurung);
       } else {
         final jsonResponse = json.decode(response.body);
-
         return Left(jsonResponse['message'] ?? "Get All burung failed");
       }
     } catch (e) {

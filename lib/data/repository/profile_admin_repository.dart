@@ -1,26 +1,27 @@
 import 'dart:convert';
 import 'dart:developer';
-
 import 'package:canaryapp/data/model/request/admin/admin_profile_request.dart';
 import 'package:canaryapp/data/model/response/admin_profile_response_model.dart';
 import 'package:canaryapp/services/service_http_client.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-class PrifileAdminRepository {
+
+class ProfileAdminRepository {
   final ServiceHttpClient _serviceHttpClient;
   final secureStorage = FlutterSecureStorage();
 
-  PrifileAdminRepository(this._serviceHttpClient);
+  ProfileAdminRepository(this._serviceHttpClient);
 
   Future<Either<String, AdminProfileResponseModel>> addProfile(
-    AdminRequestModel requestModel,
+      AdminProfileRequestModel requestModel,
   ) async {
     try {
       final response = await _serviceHttpClient.postWithToken(
         'admin/profile',
         requestModel.toMap(),
       );
+
       final jsonResponse = json.decode(response.body);
       if (response.statusCode == 201) {
         final profileResponse = AdminProfileResponseModel.fromMap(jsonResponse);
@@ -39,6 +40,7 @@ class PrifileAdminRepository {
   Future<Either<String, AdminProfileResponseModel>> getProfile() async {
     try {
       final response = await _serviceHttpClient.get("admin/profile");
+
       if (response.statusCode == 200) {
         final jsonResponse = json.decode(response.body);
         final profileResponse = AdminProfileResponseModel.fromMap(jsonResponse);
